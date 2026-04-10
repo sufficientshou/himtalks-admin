@@ -540,7 +540,12 @@ export default function ForumPage() {
                 <Plus className="h-5 w-5" />
                 Create Mini Forum
               </CardTitle>
-              <CardDescription>Post a new topic to the mini forum.</CardDescription>
+              <CardDescription>
+                Post a new topic to the mini forum.
+                <span className="block mt-1 text-xs text-emerald-600 dark:text-emerald-400">
+                  ✅ Sebagai admin, Anda bisa membuat forum kapan saja. User biasa hanya bisa posting jam 07:00–09:00 WIB.
+                </span>
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">

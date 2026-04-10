@@ -161,7 +161,7 @@ export async function createForum(formData: FormData) {
 
     if (!response.ok) {
       if (response.status === 403) {
-        throw new Error("Mini forum hanya bisa dibuat antara pukul 19:00–21:00 WIB (Forbidden)");
+        throw new Error("Akses ditolak. Pastikan Anda memiliki izin untuk membuat forum.");
       }
       
       const errText = await response.text();
@@ -272,4 +272,4 @@ export async function deleteComment(commentId: string | number) {
     console.error("Error deleting comment:", error);
     throw error;
   }
-}
+}
