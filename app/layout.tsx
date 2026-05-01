@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 import AppSidebar from "@/components/app-sidebar"
 import { Providers } from "./providers"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarTriggerWrapper } from "@/components/sidebar-trigger-wrapper"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,12 +25,14 @@ export default function RootLayout({
         <Providers>
           <div className="flex h-screen w-full relative">
             <AppSidebar />
-            <main className="flex-1 overflow-auto bg-muted/10 w-full flex flex-col">
+            <main className="flex-1 overflow-auto bg-muted/10 w-full flex flex-col relative">
               {/* Mobile Header */}
               <header className="md:hidden sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
                 <SidebarTrigger />
                 <span className="font-semibold text-lg">HIMTALKS Admin</span>
               </header>
+              {/* Desktop Sidebar Trigger - Only shows when collapsed */}
+              <SidebarTriggerWrapper />
               <div className="flex-1 w-full">
                 {children}
               </div>

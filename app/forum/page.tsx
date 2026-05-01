@@ -384,147 +384,160 @@ export default function ForumPage() {
                 <div className="text-red-500 py-4 text-center">{listError}</div>
               ) : forums.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
-                  <MessageCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No forum posts yet.</p>
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                    <MessageCircle className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-lg font-medium">No forum posts yet.</p>
                   <p className="text-sm mt-1">Switch to the &quot;Create Forum&quot; tab to create your first post.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {forums.map((forum) => (
-                    <div
+                    <Card
                       key={forum.id}
-                      className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+                      className="overflow-hidden hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500/50 hover:border-l-purple-500 group"
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-base truncate">{forum.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {forum.content}
-                          </p>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                            <span>{getCreatedAt(forum)}</span>
-                            <button
-                              onClick={() => toggleComments(forum.id)}
-                              className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-                            >
-                              <MessageCircle className="h-3 w-3" />
-                              {getCommentCount(forum)} comments
-                              {expandedForumId === forum.id ? (
-                                <ChevronUp className="h-3 w-3" />
-                              ) : (
-                                <ChevronDown className="h-3 w-3" />
-                              )}
-                            </button>
-                            {getImageUrl(forum) && (
-                              <span className="flex items-center gap-1">
-                                <ImageIcon className="h-3 w-3" />
-                                Has image
-                              </span>
-                            )}
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-lg mb-2 group-hover:text-purple-600 transition-colors">
+                              {forum.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                              {forum.content}
+                            </p>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditDialog(forum)}
-                          >
-                            <Pencil className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => openDeleteDialog(forum)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Show image preview if exists */}
-                      {getImageUrl(forum) && (
-                        <div className="mt-3">
-                          <img
-                            src={getImageUrl(forum)!}
-                            alt={forum.title}
-                            className="rounded-md max-h-48 object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = "none"
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      {/* ===== COMMENTS SECTION ===== */}
-                      {expandedForumId === forum.id && (
-                        <div className="mt-4 border-t pt-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-medium flex items-center gap-1.5">
-                              <MessageCircle className="h-4 w-4" />
-                              Comments
-                            </h4>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openEditDialog(forum)}
+                              className="hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 transition-colors"
+                            >
+                              <Pencil className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => loadComments(forum.id)}
-                              disabled={commentsLoading[forum.id]}
-                              className="h-7 text-xs"
+                              onClick={() => openDeleteDialog(forum)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
                             >
-                              <RefreshCw className={`h-3 w-3 mr-1 ${commentsLoading[forum.id] ? "animate-spin" : ""}`} />
-                              Refresh
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
                             </Button>
                           </div>
+                        </div>
 
-                          {commentsLoading[forum.id] ? (
-                            <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
-                              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                              Loading comments...
-                            </div>
-                          ) : (comments[forum.id] || []).length === 0 ? (
-                            <div className="text-center py-6 text-sm text-muted-foreground">
-                              Belum ada komentar di forum ini.
-                            </div>
-                          ) : (
-                            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
-                              {(comments[forum.id] || []).map((comment) => (
-                                <div
-                                  key={comment.id}
-                                  className="flex items-start gap-3 p-3 rounded-lg bg-muted/40 group"
-                                >
-                                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-sm font-medium">
-                                        {comment.name || "Anonim"}
-                                      </span>
-                                      <span className="text-xs text-muted-foreground">
-                                        {formatCommentDate(comment.created_at)}
-                                      </span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mt-0.5 break-words">
-                                      {comment.content}
-                                    </p>
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                    onClick={() => openDeleteCommentDialog(comment)}
-                                    title="Delete comment"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                  </Button>
-                                </div>
-                              ))}
+                        {/* Show image preview if exists */}
+                        {getImageUrl(forum) && (
+                          <div className="mb-4">
+                            <img
+                              src={getImageUrl(forum)!}
+                              alt={forum.title}
+                              className="rounded-lg max-h-64 w-full object-cover shadow-md ring-1 ring-border/50"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = "none"
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Meta Info */}
+                        <div className="flex flex-wrap items-center gap-3 mb-3">
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
+                            <span className="font-medium">{getCreatedAt(forum)}</span>
+                          </div>
+                          <button
+                            onClick={() => toggleComments(forum.id)}
+                            className="flex items-center gap-1.5 text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full font-medium hover:bg-purple-200 transition-colors cursor-pointer"
+                          >
+                            <MessageCircle className="h-3.5 w-3.5" />
+                            {getCommentCount(forum)} comments
+                            {expandedForumId === forum.id ? (
+                              <ChevronUp className="h-3.5 w-3.5" />
+                            ) : (
+                              <ChevronDown className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                          {getImageUrl(forum) && (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
+                              <ImageIcon className="h-3.5 w-3.5" />
+                              Has image
                             </div>
                           )}
                         </div>
-                      )}
-                    </div>
+
+                        {/* ===== COMMENTS SECTION ===== */}
+                        {expandedForumId === forum.id && (
+                          <div className="mt-4 pt-4 border-t border-border/50">
+                            <div className="flex items-center justify-between mb-4">
+                              <h4 className="text-sm font-semibold flex items-center gap-2">
+                                <MessageCircle className="h-4 w-4 text-purple-600" />
+                                Comments
+                              </h4>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => loadComments(forum.id)}
+                                disabled={commentsLoading[forum.id]}
+                                className="h-7 text-xs"
+                              >
+                                <RefreshCw className={`h-3 w-3 mr-1 ${commentsLoading[forum.id] ? "animate-spin" : ""}`} />
+                                Refresh
+                              </Button>
+                            </div>
+
+                            {commentsLoading[forum.id] ? (
+                              <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                Loading comments...
+                              </div>
+                            ) : (comments[forum.id] || []).length === 0 ? (
+                              <div className="text-center py-8 bg-muted/30 rounded-lg">
+                                <MessageCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground opacity-50" />
+                                <p className="text-sm text-muted-foreground">Belum ada komentar di forum ini.</p>
+                              </div>
+                            ) : (
+                              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                                {(comments[forum.id] || []).map((comment) => (
+                                  <div
+                                    key={comment.id}
+                                    className="flex items-start gap-3 p-4 rounded-lg bg-gradient-to-r from-muted/40 to-muted/20 border border-border/50 group hover:shadow-sm transition-all"
+                                  >
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center shrink-0 ring-2 ring-purple-500/20">
+                                      <User className="h-5 w-5 text-purple-600" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-sm font-semibold">
+                                          {comment.name || "Anonim"}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                          {formatCommentDate(comment.created_at)}
+                                        </span>
+                                      </div>
+                                      <p className="text-sm text-foreground/90 leading-relaxed break-words">
+                                        {comment.content}
+                                      </p>
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                      onClick={() => openDeleteCommentDialog(comment)}
+                                      title="Delete comment"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               )}
@@ -534,23 +547,28 @@ export default function ForumPage() {
 
         {/* ===== CREATE TAB ===== */}
         <TabsContent value="create">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Plus className="h-5 w-5" />
+          <Card className="border-t-4 border-t-purple-500">
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <div className="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center">
+                  <Plus className="h-5 w-5 text-white" />
+                </div>
                 Create Mini Forum
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="mt-2">
                 Post a new topic to the mini forum.
-                <span className="block mt-1 text-xs text-emerald-600 dark:text-emerald-400">
-                  ✅ Sebagai admin, Anda bisa membuat forum kapan saja. User biasa hanya bisa posting jam 07:00–09:00 WIB.
+                <span className="block mt-2 text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 px-3 py-2 rounded-lg font-medium">
+                Sebagai admin, Anda bisa membuat forum kapan saja. User biasa hanya bisa posting jam 07:00–09:00 WIB.
                 </span>
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="create-title">Forum Title</Label>
+                  <Label htmlFor="create-title" className="text-base font-semibold flex items-center gap-2">
+                    <span className="h-6 w-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">1</span>
+                    Forum Title
+                  </Label>
                   <Input
                     id="create-title"
                     placeholder="Enter an engaging title"
@@ -558,39 +576,104 @@ export default function ForumPage() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                     disabled={loading}
+                    className="h-12 text-base border-2 focus:border-purple-500 transition-colors"
                   />
+                  <p className="text-xs text-muted-foreground ml-1">Make it catchy and descriptive</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="create-content">Content</Label>
+                  <Label htmlFor="create-content" className="text-base font-semibold flex items-center gap-2">
+                    <span className="h-6 w-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">2</span>
+                    Content
+                  </Label>
                   <Textarea
                     id="create-content"
-                    placeholder="Write your forum content here..."
+                    placeholder="Write your forum content here... Share your thoughts, ask questions, or start a discussion!"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
                     disabled={loading}
-                    className="min-h-[150px]"
+                    className="min-h-[180px] text-base border-2 focus:border-purple-500 transition-colors resize-none"
                   />
+                  <p className="text-xs text-muted-foreground ml-1">Be clear and detailed to encourage engagement</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="create-image">Image Attachment (Optional)</Label>
-                  <Input
-                    id="create-image"
-                    type="file"
-                    accept="image/jpeg, image/png, image/jpg"
-                    onChange={handleFileChange}
-                    disabled={loading}
-                  />
-                  <p className="text-xs text-muted-foreground">Max file size: 2MB. Allowed formats: JPG, PNG.</p>
+                  <Label htmlFor="create-image" className="text-base font-semibold flex items-center gap-2">
+                    <span className="h-6 w-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">3</span>
+                    Image Attachment
+                    <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
+                  </Label>
+                  <div className="border-2 border-dashed border-border hover:border-purple-300 rounded-lg p-6 transition-colors bg-muted/20">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
+                        <ImageIcon className="h-6 w-6 text-purple-600" />
+                      </div>
+                      <div className="text-center">
+                        <Label htmlFor="create-image" className="cursor-pointer text-purple-600 hover:text-purple-700 font-medium">
+                          Click to upload
+                        </Label>
+                        <p className="text-xs text-muted-foreground mt-1">or drag and drop</p>
+                      </div>
+                      <Input
+                        id="create-image"
+                        type="file"
+                        accept="image/jpeg, image/png, image/jpg"
+                        onChange={handleFileChange}
+                        disabled={loading}
+                        className="hidden"
+                      />
+                    </div>
+                    {image && (
+                      <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="h-4 w-4 text-purple-600" />
+                          <span className="text-sm font-medium text-purple-700 dark:text-purple-400">{image.name}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground ml-1">Max file size: 2MB. Allowed formats: JPG, PNG.</p>
                 </div>
 
-                {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
-                {success && <div className="text-green-600 text-sm font-medium">{success}</div>}
+                {error && (
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-5 w-5 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-red-600 dark:text-red-400 text-xs font-bold">!</span>
+                      </div>
+                      <p className="text-sm text-red-700 dark:text-red-400 font-medium">{error}</p>
+                    </div>
+                  </div>
+                )}
+                
+                {success && (
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-5 w-5 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-green-600 dark:text-green-400 text-xs font-bold">✓</span>
+                      </div>
+                      <p className="text-sm text-green-700 dark:text-green-400 font-medium">{success}</p>
+                    </div>
+                  </div>
+                )}
 
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Creating Forum..." : "Create Forum Post"}
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                      Creating Forum...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-5 w-5 mr-2" />
+                      Create Forum Post
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>

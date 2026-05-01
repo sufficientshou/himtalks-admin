@@ -203,9 +203,8 @@ export default function SongfessDetailsPage() {
               <iframe
                 src={`https://open.spotify.com/embed/track/${songfess.song_id}`}
                 width="100%"
-                height="352" // Larger embed for detail page
+                height="352"
                 frameBorder="0"
-                allowTransparency={true}
                 allow="encrypted-media"
                 className="rounded"
               ></iframe>
